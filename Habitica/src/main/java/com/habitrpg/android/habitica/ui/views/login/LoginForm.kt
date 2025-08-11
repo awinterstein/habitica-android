@@ -38,6 +38,9 @@ import com.habitrpg.common.habitica.views.HabiticaCircularProgressView
 @Composable
 fun LoginForm(
     onToggleFormType: () -> Unit,
+    server: String,
+    serverFieldState: LoginFieldState,
+    onServerChange: (String) -> Unit,
     email: String,
     emailFieldState: LoginFieldState,
     onEmailChange: (String) -> Unit,
@@ -94,6 +97,20 @@ fun LoginForm(
                 }
             }
         }
+        LoginScreenField(
+            label = "Server",
+            value = server,
+            state = serverFieldState,
+            onValueChange = onServerChange,
+            icon = {
+                Image(
+                    painterResource(R.drawable.login_username),
+                    contentDescription = "Server",
+                )
+            },
+            errorMessage = if (serverFieldState == LoginFieldState.ERROR) "A valid URL starting with https:// or http:// is needed." else null,
+            modifier = Modifier.Companion.fillMaxWidth().padding(bottom = 10.dp),
+        )
         LoginScreenField(
             label = if (isRegistering) stringResource(R.string.email) else stringResource(R.string.username_or_email),
             value = email,

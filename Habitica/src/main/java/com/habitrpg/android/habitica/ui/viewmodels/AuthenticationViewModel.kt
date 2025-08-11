@@ -1,6 +1,5 @@
 package com.habitrpg.android.habitica.ui.viewmodels
 
-
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -58,6 +57,7 @@ class AuthenticationViewModel @Inject constructor(
     val hostConfig: HostConfig,
     private val keyHelper: KeyHelper?,
 ) : ViewModel() {
+    var server = mutableStateOf("https://habitica.com")
     val email = mutableStateOf("")
     val password = mutableStateOf("")
     val username = mutableStateOf("")
@@ -118,6 +118,11 @@ class AuthenticationViewModel @Inject constructor(
     fun invalidateUsernameState() {
         _isUsernameValid.value = null
         _usernameIssues.value = null
+    }
+
+    suspend fun changeServer() {
+        sharedPrefs.edit { putString("server_url", server.value) }
+        apiClient.updateServerUrl(newAddress = server.value)
     }
 
     suspend fun login() {

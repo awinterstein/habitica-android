@@ -77,7 +77,9 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
 
     val coroutineScope = rememberCoroutineScope()
 
-    var loginScreenState by remember { mutableStateOf(LoginScreenState.INITIAL) }
+    var loginScreenState by remember { mutableStateOf(LoginScreenState.LOGIN) }
+    var server by authenticationViewModel.server
+    var serverFieldState by remember { mutableStateOf(LoginFieldState.DEFAULT) }
     var password by authenticationViewModel.password
     var passwordFieldState by remember { mutableStateOf(LoginFieldState.DEFAULT) }
     var email by authenticationViewModel.email
@@ -193,6 +195,18 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
                             loginScreenState =
                                 if (loginScreenState == LoginScreenState.LOGIN) LoginScreenState.REGISTER else LoginScreenState.LOGIN
                         },
+                        server = server,
+                        serverFieldState = serverFieldState,
+                        onServerChange = {
+                            server = it
+                            serverFieldState = if (it.isEmpty()) {
+                                LoginFieldState.DEFAULT
+                            } else if (Patterns.WEB_URL.matcher(it).matches()) {
+                                LoginFieldState.VALID
+                            } else {
+                                LoginFieldState.ERROR
+                            }
+                        },
                         email = email,
                         emailFieldState = emailFieldState,
                         onEmailChange = {
@@ -228,6 +242,8 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
                         isRegistering = loginScreenState == LoginScreenState.REGISTER,
                         onSubmit = {
                             coroutineScope.launchCatching {
+                                authenticationViewModel.changeServer()
+
                                 if (loginScreenState == LoginScreenState.REGISTER) {
                                     if (useNewAuthFlow) {
                                         authenticationViewModel.checkEmail()
