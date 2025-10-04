@@ -130,14 +130,8 @@ class AboutFragment : BaseMainFragment<FragmentAboutBinding>() {
             binding?.updateAvailableWrapper?.visibility = View.GONE
         }
 
-        binding?.privacyPolicyButton?.setOnClickListener { openBrowserLink(privacyPolicyLink) }
-        binding?.termsButton?.setOnClickListener { openBrowserLink(termsLink) }
-        binding?.guidelinesButton?.setOnClickListener { MainNavigationController.navigate(R.id.guidelinesActivity) }
         binding?.sourceCodeLink?.setOnClickListener { openBrowserLink(androidSourceCodeLink) }
-        binding?.twitter?.setOnClickListener { openBrowserLink(twitterLink) }
         binding?.sourceCodeButton?.setOnClickListener { openBrowserLink(androidSourceCodeLink) }
-        binding?.reportBug?.setOnClickListener { MainNavigationController.navigate(R.id.bugFixFragment) }
-        binding?.googlePlayStoreButton?.setOnClickListener { openGooglePlay() }
         binding?.updateAvailableWrapper?.setOnClickListener { openGooglePlay() }
     }
 

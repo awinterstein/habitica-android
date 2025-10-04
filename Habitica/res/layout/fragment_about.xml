@@ -64,77 +64,12 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/twitter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20sp"
-            android:autoLink="web"
-            android:text="\@habitica"
-            android:textSize="@dimen/card_medium_text" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10sp"
             android:autoLink="web"
             android:text="www.habitica.com"
-            android:textSize="@dimen/card_medium_text" />
-
-        <Button
-            android:id="@+id/privacy_policy_button"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="35sp"
-            style="@style/HabiticaButton.Gray"
-            android:text="@string/privacy_policy"
-            android:textAllCaps="false"
-            android:textSize="@dimen/card_medium_text" />
-
-        <Button
-            android:id="@+id/terms_button"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8sp"
-            style="@style/HabiticaButton.Gray"
-            android:text="@string/terms_of_service"
-            android:textAllCaps="false"
-            android:textSize="@dimen/card_medium_text" />
-
-        <Button
-            android:id="@+id/guidelines_button"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8sp"
-            style="@style/HabiticaButton.Gray"
-            android:text="@string/community_guidelines"
-            android:textAllCaps="false"
-            android:textSize="@dimen/card_medium_text" />
-
-        <Button
-            android:id="@+id/googlePlayStoreButton"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="35sp"
-            style="@style/HabiticaButton.Gray"
-            android:text="@string/about_rate_our_app"
-            android:textAllCaps="false"
-            android:textSize="@dimen/card_medium_text" />
-
-        <Button
-            android:id="@+id/reportBug"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8sp"
-            style="@style/HabiticaButton.Gray"
-            android:text="@string/about_bugreport"
-            android:textAllCaps="false"
             android:textSize="@dimen/card_medium_text" />
 
         <TextView

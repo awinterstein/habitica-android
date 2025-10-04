@@ -400,9 +400,6 @@ class NavigationDrawerFragment : DialogFragment() {
             promoItem.isVisible = !user.isSubscribed
             adapter.updateItem(promoItem)
         }
-        getItemWithIdentifier(SIDEBAR_NEWS)?.let {
-            it.showBubble = user.flags?.newStuff ?: false
-        }
 
         val partyMenuItem = getItemWithIdentifier(SIDEBAR_PARTY)
         if (user.hasParty && partyMenuItem?.bundle == null) {
@@ -539,20 +536,6 @@ class NavigationDrawerFragment : DialogFragment() {
             )
             items.add(
                 HabiticaDrawerItem(
-                    R.id.gemPurchaseActivity,
-                    SIDEBAR_GEMS,
-                    context.getString(R.string.sidebar_gems)
-                )
-            )
-            items.add(
-                HabiticaDrawerItem(
-                    R.id.subscriptionPurchaseActivity,
-                    SIDEBAR_SUBSCRIPTION,
-                    context.getString(R.string.sidebar_subscription)
-                )
-            )
-            items.add(
-                HabiticaDrawerItem(
                     0,
                     SIDEBAR_SOCIAL,
                     context.getString(R.string.sidebar_section_social),
@@ -586,13 +569,6 @@ class NavigationDrawerFragment : DialogFragment() {
             )
             items.add(
                 HabiticaDrawerItem(
-                    R.id.newsFragment,
-                    SIDEBAR_NEWS,
-                    context.getString(R.string.sidebar_news)
-                )
-            )
-            items.add(
-                HabiticaDrawerItem(
                     R.id.supportMainFragment,
                     SIDEBAR_HELP,
                     context.getString(R.string.sidebar_help)
@@ -607,17 +583,6 @@ class NavigationDrawerFragment : DialogFragment() {
             )
         }
 
-        val promoItem = HabiticaDrawerItem(R.id.subscriptionPurchaseActivity, SIDEBAR_PROMO)
-        promoItem.itemViewType = 5
-        promoItem.isVisible = false
-        items.add(0, promoItem)
-
-        if (configManager.showSubscriptionBanner()) {
-            val item =
-                HabiticaDrawerItem(R.id.subscriptionPurchaseActivity, SIDEBAR_SUBSCRIPTION_PROMO)
-            item.itemViewType = 2
-            items.add(item)
-        }
         adapter.updateItems(items)
     }
 
@@ -877,7 +842,6 @@ class NavigationDrawerFragment : DialogFragment() {
         const val SIDEBAR_BIRTHDAY = "birthday"
         const val SIDEBAR_PROMO = "promo"
         const val SIDEBAR_ABOUT_HEADER = "about_header"
-        const val SIDEBAR_NEWS = "news"
         const val SIDEBAR_HELP = "help"
         const val SIDEBAR_ABOUT = "about"
 
