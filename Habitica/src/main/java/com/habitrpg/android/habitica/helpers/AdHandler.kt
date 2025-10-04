@@ -1,13 +1,5 @@
 package com.habitrpg.android.habitica.helpers
 
-/*import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.RequestConfiguration
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback*/
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
@@ -116,11 +108,6 @@ class AdHandler(val activity: Activity, val type: AdType, val rewardAction: (Boo
             }
 
             currentAdStatus = AdStatus.INITIALIZING
-            /*MobileAds.initialize(context) {
-                currentAdStatus = AdStatus.READY
-                onComplete()
-                FirebaseCrashlytics.getInstance().recordException(Throwable("Ads Initialized"))
-            }*/
         }
 
         fun whenAdsInitialized(
@@ -162,35 +149,6 @@ class AdHandler(val activity: Activity, val type: AdType, val rewardAction: (Boo
 
     fun prepare(onComplete: ((Boolean) -> Unit)? = null) {
         whenAdsInitialized(activity) {
-            /*val adRequest = AdRequest.Builder()
-                .build()
-
-            if (BuildConfig.DEBUG || BuildConfig.TESTING_LEVEL == "staff" || BuildConfig.TESTING_LEVEL == "alpha") {
-                if (!adRequest.isTestDevice(activity)) {
-                    // users in this group need to be configured as Test device. better to fail if they aren't
-                    // currentAdStatus = AdStatus.DISABLED
-                    FirebaseCrashlytics.getInstance().recordException(Throwable("Device not test device"))
-                }
-            }
-
-            RewardedAd.load(
-                activity,
-                type.adUnitID,
-                adRequest,
-                object : RewardedAdLoadCallback() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Throwable(adError.message))
-                        rewardAction(false)
-                        onComplete?.invoke(false)
-                    }
-
-                    override fun onAdLoaded(rewardedAd: RewardedAd) {
-                        this@AdHandler.rewardedAd = rewardedAd
-                        configureReward()
-                        onComplete?.invoke(true)
-                    }
-                }
-            )*/
         }
     }
 
@@ -225,23 +183,5 @@ class AdHandler(val activity: Activity, val type: AdType, val rewardAction: (Boo
         if (nextAdAllowedDate(type)?.after(Date()) == true) {
             return
         }
-        /*if (rewardedAd != null) {
-            rewardedAd?.show(activity, this)
-            setNextAllowedDate(type)
-        } else {
-            Log.d(TAG, "The rewarded ad wasn't ready yet.")
-        }*/
     }
-
-    /*override fun onUserEarnedReward(rewardItem: RewardItem) {
-        Analytics.sendEvent(
-            "adRewardEarned",
-            EventCategory.BEHAVIOUR,
-            HitType.EVENT,
-            mapOf(
-                "type" to type.name
-            )
-        )
-        rewardAction(true)
-    }*/
 }

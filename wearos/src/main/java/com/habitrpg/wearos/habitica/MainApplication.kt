@@ -2,10 +2,6 @@ package com.habitrpg.wearos.habitica
 
 import android.app.Application
 import android.content.Intent
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.Firebase
 import com.habitrpg.android.habitica.BuildConfig
 import com.habitrpg.common.habitica.extensions.setupCoil
 import com.habitrpg.common.habitica.helpers.MarkdownParser
@@ -37,7 +33,6 @@ class MainApplication : Application() {
         super.onCreate()
         MarkdownParser.setup(this)
         setupCoil()
-        setupFirebase()
 
         MainScope().launch {
             userRepository.getUser()
@@ -60,19 +55,6 @@ class MainApplication : Application() {
     }
 
     private fun logLaunch() {
-        if (!BuildConfig.DEBUG) {
-            Firebase.analytics.logEvent("wear_launched", null)
-        }
-    }
-
-    private fun setupFirebase() {
-        if (!BuildConfig.DEBUG) {
-            val crashlytics = Firebase.crashlytics
-            if (userRepository.hasAuthentication) {
-                crashlytics.setUserId(userRepository.userID)
-            }
-            crashlytics.setCustomKey("is_wear", true)
-            FirebaseAnalytics.getInstance(this).setUserProperty("app_testing_level", BuildConfig.TESTING_LEVEL)
-        }
+        // not doing anything for the self-hosted version
     }
 }

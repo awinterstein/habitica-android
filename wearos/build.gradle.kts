@@ -9,7 +9,6 @@ plugins {
     id(libs.plugins.hilt.get().pluginId)
     id(libs.plugins.habitrpg.convention.get().pluginId)
     id(libs.plugins.habitrpg.application.get().pluginId)
-    id(libs.plugins.crashlytics.get().pluginId)
     id(libs.plugins.google.service.get().pluginId)
 }
 
@@ -35,7 +34,6 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-            ext["enableCrashlytics"] = false
             ext["alwaysUpdateBuildId"] = false
             resValue("string", "app_name", "Habitica Debug")
         }

@@ -53,7 +53,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import com.google.android.gms.wearable.Wearable
-import com.google.firebase.perf.FirebasePerformance
 import com.habitrpg.android.habitica.BuildConfig
 import com.habitrpg.android.habitica.MainNavDirections
 import com.habitrpg.android.habitica.R
@@ -222,18 +221,10 @@ open class MainActivity : BaseActivity(), SnackbarActivity {
         return binding.root
     }
 
-    private var launchTrace: com.google.firebase.perf.metrics.Trace? = null
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
             mainActivityCreatedAt = Date()
         }
-        try {
-            launchTrace = FirebasePerformance.getInstance().newTrace("MainActivityLaunch")
-        } catch (e: IllegalStateException) {
-            ExceptionHandler.reportError(e)
-        }
-        launchTrace?.start()
         super.onCreate(savedInstanceState)
         DataBindingUtils.configManager = appConfigManager
 
@@ -599,9 +590,6 @@ open class MainActivity : BaseActivity(), SnackbarActivity {
             retrieveUser(true)
             NotificationOpenHandler.handleOpenedByNotification(identifier, intent)
         }
-
-        launchTrace?.stop()
-        launchTrace = null
 
         if (binding.content.toolbarTitle.text?.isNotBlank() != true) {
             navigationController.currentDestination?.let { updateToolbarTitle(it, null) }

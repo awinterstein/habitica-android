@@ -15,7 +15,6 @@ plugins {
     id(libs.plugins.realm.get().pluginId)
     id(libs.plugins.habitrpg.application.get().pluginId)
     id(libs.plugins.habitrpg.convention.get().pluginId)
-    id(libs.plugins.crashlytics.get().pluginId)
     id(libs.plugins.firebase.perf.get().pluginId)
     id(libs.plugins.google.service.get().pluginId)
 }
@@ -58,7 +57,6 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             // Disable fabric build ID generation for debug builds
-            ext["enableCrashlytics"] = false
             ext["alwaysUpdateBuildId"] = false
             enableUnitTestCoverage = false
             resValue("string", "content_provider", "com.habitrpg.android.habitica.debug.fileprovider")
@@ -72,7 +70,6 @@ android {
             enableAndroidTestCoverage = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             // Disable fabric build ID generation for debug builds
-            ext["enableCrashlytics"] = false
             ext["alwaysUpdateBuildId"] = false
             resValue("string", "content_provider", "com.habitrpg.android.habitica.fileprovider")
             resValue("string", "app_name", "Habitica Debug")

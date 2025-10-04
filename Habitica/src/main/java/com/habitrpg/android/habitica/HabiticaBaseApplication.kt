@@ -28,8 +28,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.habitrpg.android.habitica.data.ApiClient
 import com.habitrpg.android.habitica.extensions.DateUtils
-import com.habitrpg.android.habitica.helpers.AdHandler
-import com.habitrpg.android.habitica.helpers.Analytics
 import com.habitrpg.android.habitica.helpers.notifications.PushNotificationManager
 import com.habitrpg.android.habitica.helpers.notifications.PushNotificationManager.Companion.DEVICE_TOKEN_PREFERENCE_KEY
 import com.habitrpg.android.habitica.models.user.User
@@ -81,8 +79,6 @@ class ApplicationLifecycleTracker(private val sharedPreferences: SharedPreferenc
                 putInt("usage_time_day_count", ++observedDays)
                 putLong("usage_time_daily_average", average)
             }
-            Analytics.setUserProperty("usage_time_daily_average", average)
-            Analytics.setUserProperty("usage_time_total", currentTotal)
             current = 0
             currentDay = Date()
         }
@@ -119,37 +115,17 @@ abstract class HabiticaBaseApplication : Application(), Application.ActivityLife
         lifecycleTracker = ApplicationLifecycleTracker(sharedPrefs)
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleTracker)
 
-        if (!BuildConfig.DEBUG) {
-            try {
-                Analytics.initialize(this)
-            } catch (ignored: Resources.NotFoundException) {
-            }
-            Analytics.identify(sharedPrefs)
-            Analytics.setUserID(lazyApiHelper.hostConfig.userID)
-        }
         registerActivityLifecycleCallbacks(this)
         setupRealm()
         setLocale()
         setupRemoteConfig()
-        setupNotifications()
-        setupAdHandler()
         HabiticaIconsHelper.init(this)
         MarkdownParser.setup(this)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         setupCoil()
 
-        ExceptionHandler.init {
-            Analytics.logException(it)
-        }
-
-        Analytics.setUserProperty("app_testing_level", BuildConfig.TESTING_LEVEL)
-
         checkIfNewVersion()
-    }
-
-    private fun setupAdHandler() {
-        AdHandler.setup(sharedPrefs)
     }
 
     private fun setLocale() {
@@ -258,19 +234,6 @@ abstract class HabiticaBaseApplication : Application(), Application.ActivityLife
             override fun onError(error: FirebaseRemoteConfigException) {
             }
         })
-    }
-
-    private fun setupNotifications() {
-        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("Token", "getInstanceId failed", task.exception)
-                return@addOnCompleteListener
-            }
-            val token = task.result
-            if (BuildConfig.DEBUG) {
-                Log.d("Token", "Firebase Notification Token: $token")
-            }
-        }
     }
 
     var currentActivity: WeakReference<BaseActivity>? = null

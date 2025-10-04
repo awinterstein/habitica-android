@@ -3,12 +3,6 @@ package com.habitrpg.android.habitica.helpers
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.os.bundleOf
-import com.amplitude.android.Amplitude
-import com.amplitude.android.Configuration
-import com.amplitude.android.events.Identify
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.perf.FirebasePerformance
 import com.habitrpg.android.habitica.BuildConfig
 import com.habitrpg.android.habitica.R
 
@@ -31,9 +25,6 @@ enum class HitType(val key: String) {
 }
 
 object Analytics {
-    private lateinit var firebase: FirebaseAnalytics
-    private lateinit var amplitude: Amplitude
-
     @JvmOverloads
     fun sendEvent(
         eventAction: String?,
@@ -42,31 +33,7 @@ object Analytics {
         additionalData: Map<String, Any>? = null,
         target: AnalyticsTarget? = null
     ) {
-        if (BuildConfig.DEBUG) {
-            return
-        }
-        val data =
-            mutableMapOf<String, Any?>(
-                "eventAction" to eventAction,
-                "eventCategory" to category?.key,
-                "hitType" to hitType?.key,
-                "status" to "displayed"
-            )
-        if (additionalData != null) {
-            data.putAll(additionalData)
-        }
-        if (eventAction != null) {
-            executeLambda(AnalyticsTarget.AMPLITUDE) {
-                if (target == null || target == AnalyticsTarget.AMPLITUDE) {
-                    amplitude.track(eventAction, data)
-                }
-            }
-            executeLambda(AnalyticsTarget.FIREBASE) {
-                if (target == null || target == AnalyticsTarget.FIREBASE) {
-                    firebase.logEvent(eventAction, bundleOf(*data.toList().toTypedArray()))
-                }
-            }
-        }
+        // not doing anything for the self-hosted version
     }
 
     fun sendNavigationEvent(page: String) {
@@ -76,76 +43,38 @@ object Analytics {
     }
 
     fun initialize(context: Context) {
-        amplitude =
-            Amplitude(
-                Configuration(
-                    context.getString(R.string.amplitude_app_id),
-                    context,
-                    optOut = true,
-                )
-            )
-        firebase = FirebaseAnalytics.getInstance(context)
+        // not doing anything for the self-hosted version
     }
 
     fun identify(sharedPrefs: SharedPreferences) {
-        val identify =
-            Identify()
-                .setOnce("androidStore", BuildConfig.STORE)
-        sharedPrefs.getString("launch_screen", "")?.let {
-            identify.set("launch_screen", it)
-        }
-        executeLambda(AnalyticsTarget.AMPLITUDE) {
-            amplitude.identify(identify)
-        }
+        // not doing anything for the self-hosted version
     }
 
     fun setUserID(userID: String) {
-        executeLambda(AnalyticsTarget.AMPLITUDE) {
-            amplitude.setUserId(userID)
-        }
-        FirebaseCrashlytics.getInstance().setUserId(userID)
-        executeLambda(AnalyticsTarget.FIREBASE) {
-            firebase.setUserId(userID)
-        }
+        // not doing anything for the self-hosted version
     }
 
     fun setUserProperty(
         identifier: String,
         value: Any?
     ) {
-        executeLambda(AnalyticsTarget.AMPLITUDE) {
-            amplitude.identify(mapOf(identifier to value))
-        }
-        executeLambda(AnalyticsTarget.FIREBASE) {
-            firebase.setUserProperty(identifier, value?.toString())
-        }
+        // not doing anything for the self-hosted version
     }
 
     fun logError(msg: String) {
-        FirebaseCrashlytics.getInstance().log(msg)
+        // not doing anything for the self-hosted version
     }
 
     fun logException(t: Throwable) {
-        FirebaseCrashlytics.getInstance().recordException(t)
+        // not doing anything for the self-hosted version
     }
 
     fun setAnalyticsConsent(consents: Boolean?) {
-        val isEnabled = consents == true
-        executeLambda(AnalyticsTarget.FIREBASE) {
-            firebase.setAnalyticsCollectionEnabled(isEnabled)
-        }
-        FirebasePerformance.getInstance().isPerformanceCollectionEnabled = isEnabled
-        executeLambda(AnalyticsTarget.AMPLITUDE) {
-            amplitude.configuration.optOut = !isEnabled
-        }
+        // not doing anything for the self-hosted version
     }
 
 
     private fun executeLambda(analyticsTarget: AnalyticsTarget, action: () -> Unit) {
-        when (analyticsTarget) {
-            AnalyticsTarget.AMPLITUDE -> if (!::amplitude.isInitialized) return
-            AnalyticsTarget.FIREBASE -> if (!::firebase.isInitialized) return
-        }
         action()
     }
 }
