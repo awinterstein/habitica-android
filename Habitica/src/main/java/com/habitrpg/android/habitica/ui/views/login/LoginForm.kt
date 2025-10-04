@@ -44,7 +44,6 @@ fun LoginForm(
     password: String,
     passwordFieldState: LoginFieldState,
     onPasswordChange: (String) -> Unit,
-    onGoogleLoginClicked: () -> Unit,
     onForgotPasswordClicked: () -> Unit,
     isRegistering: Boolean,
     onSubmit: () -> Unit,
@@ -188,33 +187,6 @@ fun LoginForm(
                             fontSize = 18.sp
                         )
                     }
-                }
-            }
-        }
-        AnimatedVisibility(!isRegistering) {
-            Button(
-                onGoogleLoginClicked,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Companion.White,
-                    contentColor = colorResource(R.color.gray_50)
-                ),
-                shape = HabiticaTheme.shapes.large,
-                contentPadding = PaddingValues(15.dp),
-                modifier = Modifier.Companion.widthIn(max = 480.dp).fillMaxWidth().padding(top = 10.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Companion.CenterVertically
-                ) {
-                    Image(
-                        painterResource(R.drawable.googleg_standard_color_18),
-                        contentDescription = null
-                    )
-                    Text(
-                        stringResource(R.string.continue_with_google),
-                        fontWeight = FontWeight.Companion.Bold,
-                        fontSize = 18.sp
-                    )
                 }
             }
         }

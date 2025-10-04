@@ -45,19 +45,6 @@
                     android:key="password"
                     android:layout="@layout/preference_button"
                     />
-                <com.habitrpg.android.habitica.ui.views.ExtraLabelPreference
-                    android:title="@string/google"
-                    android:key="google_auth"
-                    android:layout="@layout/preference_button"
-                    />
-                <com.habitrpg.android.habitica.ui.views.ExtraLabelPreference
-                    android:title="@string/facebook"
-                    android:key="facebook_auth"
-                    />
-                <com.habitrpg.android.habitica.ui.views.ExtraLabelPreference
-                    android:title="@string/apple"
-                    android:key="apple_auth"
-                    />
             </PreferenceCategory>
             <PreferenceCategory
                 android:title="@string/public_profile"

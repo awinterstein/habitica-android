@@ -234,22 +234,6 @@ class AccountPreferenceFragment :
                 )
 
             "about" -> updateUser("profile.blurb", user?.profile?.blurb, getString(R.string.about))
-            "google_auth" -> {
-                if (user?.authentication?.hasGoogleAuth == true) {
-                    disconnect("google", "Google")
-                } else {
-                    lastAuthenticationMethod = getString(R.string.google)
-                    activity?.let {
-                        viewModel.startGoogleAuth(it, true)
-                    }
-                }
-            }
-
-            "facebook_auth" -> {
-                if (user?.authentication?.hasFacebookAuth == true) {
-                    disconnect("facebook", "Facebook")
-                }
-            }
 
             "reset_account" -> showAccountResetConfirmation(user)
             "delete_account" -> showAccountDeleteConfirmation(user)

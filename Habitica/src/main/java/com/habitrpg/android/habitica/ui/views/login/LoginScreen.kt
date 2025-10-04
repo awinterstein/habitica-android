@@ -240,9 +240,6 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
                             }
                         },
                         showLoading = showLoading,
-                        onGoogleLoginClicked = {
-                            authenticationViewModel.startGoogleAuth(context)
-                        },
                         onForgotPasswordClicked = onForgotPasswordClicked
                     )
                 }
@@ -256,8 +253,6 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
                         loginScreenState = LoginScreenState.LOGIN
                     }, {
                         loginScreenState = LoginScreenState.REGISTER
-                    }, {
-                        authenticationViewModel.startGoogleAuth(context)
                     })
                 }
             }

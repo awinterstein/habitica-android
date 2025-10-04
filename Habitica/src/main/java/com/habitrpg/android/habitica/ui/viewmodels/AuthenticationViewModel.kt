@@ -218,73 +218,13 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun startGoogleAuth(context: Context, allowRegister: Boolean = false) {
-        try {
-            val googleIdOption = GetSignInWithGoogleOption.Builder(BuildConfig.GOOGLE_AUTH_CLIENT_ID)
-                .build()
-            val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
-                .build()
-
-            viewModelScope.launch {
-                try {
-                    val result = CredentialManager.create(context).getCredential(
-                        request = request,
-                        context = context,
-                    )
-                    handleSignIn(context, result, allowRegister)
-                } catch (e: GetCredentialException) {
-                    Log.e("AuthenticationViewModel", "Get Credential Exception", e)
-                }
-            }
-        } catch (e: ApiException) {
-            authenticationError(AuthenticationErrors.GET_CREDENTIALS_ERROR)
-            Log.e("AuthenticationViewModel", "API Exception", e)
-        } catch (e: Exception) {
-            authenticationError(AuthenticationErrors.GET_CREDENTIALS_ERROR)
-            Log.e("AuthenticationViewModel", "Unknown Exception", e)
-        }
-    }
-
-    private var googleIdTokenCredential: GoogleIdTokenCredential? = null
-    private var accessToken: String? = null
-
     private suspend fun handleSignIn(context: Context, result: GetCredentialResponse, allowRegister: Boolean) {
         val credential = result.credential
 
         when (credential) {
             is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential
-                            .createFrom(credential.data)
-                        val authorizationRequest = AuthorizationRequest.Builder()
-                            .requestOfflineAccess(BuildConfig.GOOGLE_AUTH_CLIENT_ID)
-                            .setRequestedScopes(
-                                listOf(
-                                    Scope(Scopes.PROFILE),
-                                    Scope(Scopes.EMAIL),
-                                )
-                            )
-                            .build()
-                        val result = Identity.getAuthorizationClient(context)
-                            .authorize(authorizationRequest).await()
-                        if (result != null && result.accessToken != null) {
-                            this.googleIdTokenCredential = googleIdTokenCredential
-                            this.accessToken = result.accessToken
-                            attemptSocialLogin(allowRegister)
-                        } else {
-                            authenticationError(AuthenticationErrors.MISSING_TOKEN)
-                            Log.e("AuthenticationViewModel", "Received an empty access token response")
-                        }
-                    } catch (e: GoogleIdTokenParsingException) {
-                        authenticationError(AuthenticationErrors.INVALID_CREDENTIALS)
-                        Log.e("AuthenticationViewModel", "Received an invalid google id token response", e)
-                    }
-                } else {
                     authenticationError(AuthenticationErrors.INVALID_CREDENTIAL_TYPE)
                     Log.e("AuthenticationViewModel", "Unexpected type of credential: $credential")
-                }
             }
 
             else -> {
@@ -294,40 +234,16 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    suspend fun attemptSocialLogin(allowRegister: Boolean) {
-        val tokenId = googleIdTokenCredential?.id ?: return
-        val token = accessToken ?: return
-        val response = apiClient.connectSocial("google", tokenId, token, allowRegister)
-        Log.d("AuthenticationViewModel", "Social auth response: $response")
-        if (response?.userExists == false) {
-            isRegistering.value = true
-            _authenticationSuccess.value = true
-        } else {
-            handleAuthResponse(response)
-        }
-    }
-
     suspend fun updateUsername() {
         apiClient.updateUsername(username.value)
     }
 
-    fun startedSocialAuth(): Boolean {
-        return googleIdTokenCredential != null && accessToken != null
-    }
-
     suspend fun completeRegistration() {
-        if (startedSocialAuth()) {
-            attemptSocialLogin(true)
-            updateUsername()
-        } else {
-            register()
-        }
+        register()
     }
 
     suspend fun prefillUsername() {
-        val email = if (googleIdTokenCredential != null) {
-            googleIdTokenCredential?.id ?: return
-        } else email.value.ifBlank {
+        val email = email.value.ifBlank {
             ""
         }
         if (email.isNotBlank()) {
