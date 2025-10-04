@@ -45,7 +45,6 @@ internal class StableRecyclerFragmentTest : FragmentTestCase<StableRecyclerFragm
         every { inventoryRepository.getOwnedMounts() } returns flowOf(user.items?.mounts!!)
         fragment = spyk()
         fragment.shouldInitializeComponent = false
-        fragment.itemType = "pets"
     }
 
     override fun launchFragment(args: Bundle?) {
@@ -76,7 +75,6 @@ internal class StableRecyclerFragmentTest : FragmentTestCase<StableRecyclerFragm
 
     @Test
     fun displaysMounts() {
-        fragment.itemType = "mounts"
         launchFragment()
         screen {
             recycler {
