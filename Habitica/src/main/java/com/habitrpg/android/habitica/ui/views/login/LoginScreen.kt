@@ -1,5 +1,6 @@
 package com.habitrpg.android.habitica.ui.views.login
 
+import android.content.Intent
 import android.util.Patterns
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseInOut
@@ -56,6 +57,7 @@ import com.habitrpg.android.habitica.ui.viewmodels.AuthenticationViewModel
 import com.habitrpg.android.habitica.ui.views.LoginFieldState
 import com.habitrpg.common.habitica.extensions.layoutInflater
 import com.habitrpg.common.habitica.helpers.launchCatching
+import kotlinx.coroutines.delay
 
 enum class LoginScreenState {
     INITIAL,
@@ -84,6 +86,11 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
     var passwordFieldState by remember { mutableStateOf(LoginFieldState.DEFAULT) }
     var email by authenticationViewModel.email
     var emailFieldState by remember { mutableStateOf(LoginFieldState.DEFAULT) }
+    val oidcName by authenticationViewModel.oidcName
+    LaunchedEffect(server) {
+        delay(500) // until the address is typed
+        authenticationViewModel.checkOidc()
+    }
     val context = LocalContext.current
     Box(modifier.fillMaxSize()) {
         AndroidView(
@@ -256,6 +263,13 @@ fun LoginScreen(authenticationViewModel: AuthenticationViewModel, useNewAuthFlow
                             }
                         },
                         showLoading = showLoading,
+                        oidcName = oidcName,
+                        onOidcLoginClicked = {
+                            coroutineScope.launchCatching {
+                                authenticationViewModel.changeServer()
+                                context.startActivity(Intent(Intent.ACTION_VIEW, authenticationViewModel.oidcLoginUrl()))
+                            }
+                        },
                         onForgotPasswordClicked = onForgotPasswordClicked
                     )
                 }

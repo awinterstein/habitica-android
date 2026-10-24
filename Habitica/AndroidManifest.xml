@@ -102,7 +102,15 @@
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/LoginActivityName"
             android:configChanges="screenSize | smallestScreenSize | screenLayout | orientation"
+            android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="habitica" android:host="oidc" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activities.AdventureGuideActivity"

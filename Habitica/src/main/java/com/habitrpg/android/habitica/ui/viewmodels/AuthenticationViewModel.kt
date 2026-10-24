@@ -2,9 +2,11 @@ package com.habitrpg.android.habitica.ui.viewmodels
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -29,6 +31,7 @@ import com.habitrpg.android.habitica.helpers.AnalyticsTarget
 import com.habitrpg.android.habitica.helpers.AppConfigManager
 import com.habitrpg.android.habitica.helpers.EventCategory
 import com.habitrpg.android.habitica.helpers.HitType
+import com.habitrpg.android.habitica.helpers.OidcClient
 import com.habitrpg.android.habitica.models.user.User
 import com.habitrpg.android.habitica.modules.AuthenticationHandler
 import com.habitrpg.common.habitica.api.HostConfig
@@ -63,6 +66,7 @@ class AuthenticationViewModel @Inject constructor(
     val username = mutableStateOf("")
     val user = mutableStateOf<User?>(null)
     val isRegistering = mutableStateOf(false)
+    val oidcName = mutableStateOf<String?>(null)
 
     private val _showAuthProgress = MutableStateFlow(false)
     private val _authenticationError: MutableSharedFlow<AuthenticationErrors?> = MutableSharedFlow()
@@ -123,6 +127,49 @@ class AuthenticationViewModel @Inject constructor(
     suspend fun changeServer() {
         sharedPrefs.edit { putString("server_url", server.value) }
         apiClient.updateServerUrl(newAddress = server.value)
+    }
+
+    // The login is only offered when the server announces a provider
+    suspend fun checkOidc() {
+        oidcName.value = runCatching { OidcClient.providerName(server.value) }.getOrNull()
+    }
+
+    // Starts the login in the browser, the server answers through habitica://oidc (see OidcClient)
+    fun oidcLoginUrl(): Uri {
+        val verifier = OidcClient.randomToken()
+        val state = OidcClient.randomToken()
+        sharedPrefs.edit {
+            putString("oidc_verifier", verifier)
+            putString("oidc_state", state)
+        }
+        return "${server.value.trimEnd('/')}/api/v4/user/auth/oidc".toUri().buildUpon()
+            .appendQueryParameter("platform", "android")
+            .appendQueryParameter("code_challenge", OidcClient.codeChallenge(verifier))
+            .appendQueryParameter("state", state)
+            .build()
+    }
+
+    suspend fun loginWithOidc(uri: Uri) {
+        val verifier = sharedPrefs.getString("oidc_verifier", null)
+        val state = sharedPrefs.getString("oidc_state", null)
+        sharedPrefs.edit {
+            remove("oidc_verifier")
+            remove("oidc_state")
+        }
+        val code = uri.getQueryParameter("code")
+        if (verifier == null || code == null || state == null || uri.getQueryParameter("state") != state) {
+            return authenticationError()
+        }
+        _showAuthProgress.value = true
+        isRegistering.value = false
+        try {
+            // The server is read back from the preferences in case the app was restarted meanwhile
+            val serverUrl = sharedPrefs.getString("server_url", null) ?: server.value
+            handleAuthResponse(OidcClient.redeemCode(serverUrl, code, verifier))
+        } catch (e: Exception) {
+            authenticationError()
+            Analytics.logException(e)
+        }
     }
 
     suspend fun login() {

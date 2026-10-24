@@ -18,6 +18,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
+import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
@@ -100,6 +101,16 @@ class OnboardingActivity: BaseActivity() {
                 showError(it)
             }
         }
+
+        // Login redirect from the OpenID Connect provider (habitica://oidc)
+        val oidcCallback = Consumer<Intent> { intent ->
+            intent.data?.let { uri ->
+                currentStep.value = OnboardingSteps.LOGIN
+                lifecycleScope.launchCatching { authenticationViewModel.loginWithOidc(uri) }
+            }
+        }
+        oidcCallback.accept(intent)
+        addOnNewIntentListener(oidcCallback)
 
         binding.root.setContent {
             val step by currentStep
